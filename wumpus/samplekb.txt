@@ -1,0 +1,20 @@
+% Logic Puzzle
+%
+% Bob (B), Ray (R), Dan (D) and Jan (J) like different video games.
+% One likes Tetris (T), one likes PacMan (P), one likes Asteroids (A),
+% and one likes Centipede (C). Ray does not like Asteroids or Centipede.
+% Dan does not like Asteroids or Tetris. Both Bob and Dan do not like
+% Centipede. Prove that Dan likes PacMan (LikesDP).
+
+% Facts
+~LikesRA & ~LikesRC
+~LikesDA & ~LikesDT
+~LikesBC & ~LikesDC
+
+% Some rules implied by one-to-one mapping between people and games
+~LikesBC & ~LikesRC & ~LikesDC => LikesJC
+LikesJC => ~LikesJA & ~LikesJT & ~LikesJP
+~LikesJA & ~LikesRA & ~LikesDA => LikesBA
+LikesBA => ~LikesBC & ~LikesBT & ~LikesBP
+~LikesJT & ~LikesBT & ~LikesDT => LikesRT
+~LikesDA & ~LikesDC & ~LikesDT => LikesDP
