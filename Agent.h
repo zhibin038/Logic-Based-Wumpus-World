@@ -10,6 +10,8 @@
 #include "WorldState.h" // HW1
 #include "Search.h" // HW2
 #include "Prover.h" // HW3
+#include "Location.h"
+#include <stack>
 
 class Agent
 {
@@ -33,6 +35,8 @@ public:
 	// HW3
 	KnowledgeBase KB;
 	void InitializeKB();
+
+	stack<Location> stack_location;
 };
 
 // HW3 utilities

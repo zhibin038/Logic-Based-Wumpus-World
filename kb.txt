@@ -1,0 +1,329 @@
+safe_1_1
+% No pit.....
+~breeze_1_1 => ~pit_1_2
+~breeze_1_1 => ~pit_2_1
+~breeze_1_2 => ~pit_1_1
+~breeze_1_2 => ~pit_1_3
+~breeze_1_2 => ~pit_2_2
+~breeze_1_3 => ~pit_1_2
+~breeze_1_3 => ~pit_2_3
+~breeze_1_3 => ~pit_1_4
+~breeze_1_4 => ~pit_1_3
+~breeze_1_4 => ~pit_2_4
+~breeze_2_1 => ~pit_1_1
+~breeze_2_1 => ~pit_2_2
+~breeze_2_1 => ~pit_3_1
+~breeze_2_2 => ~pit_2_1
+~breeze_2_2 => ~pit_1_2
+~breeze_2_2 => ~pit_2_3
+~breeze_2_2 => ~pit_3_2
+~breeze_2_3 => ~pit_1_3
+~breeze_2_3 => ~pit_2_2
+~breeze_2_3 => ~pit_2_4
+~breeze_2_3 => ~pit_3_3
+~breeze_2_4 => ~pit_1_4
+~breeze_2_4 => ~pit_2_3
+~breeze_2_4 => ~pit_3_4
+~breeze_3_1 => ~pit_2_1
+~breeze_3_1 => ~pit_3_2
+~breeze_3_1 => ~pit_4_1
+~breeze_3_2 => ~pit_3_1
+~breeze_3_2 => ~pit_2_2
+~breeze_3_2 => ~pit_3_3
+~breeze_3_2 => ~pit_4_2
+~breeze_3_3 => ~pit_2_3
+~breeze_3_3 => ~pit_3_2
+~breeze_3_3 => ~pit_3_4
+~breeze_3_3 => ~pit_4_3
+~breeze_3_4 => ~pit_4_4
+~breeze_3_4 => ~pit_2_4
+~breeze_3_4 => ~pit_3_3
+~breeze_4_1 => ~pit_4_2
+~breeze_4_1 => ~pit_3_1
+~breeze_4_2 => ~pit_4_1
+~breeze_4_2 => ~pit_3_2
+~breeze_4_2 => ~pit_4_3
+~breeze_4_3 => ~pit_3_3
+~breeze_4_3 => ~pit_4_2
+~breeze_4_3 => ~pit_4_4
+~breeze_4_4 => ~pit_3_4
+~breeze_4_4 => ~pit_4_3
+% No wumpus.....
+~stench_1_1 => ~wumpus_1_2
+~stench_1_1 => ~wumpus_2_1
+~stench_1_2 => ~wumpus_1_1
+~stench_1_2 => ~wumpus_1_3
+~stench_1_2 => ~wumpus_2_2
+~stench_1_3 => ~wumpus_1_2
+~stench_1_3 => ~wumpus_2_3
+~stench_1_3 => ~wumpus_1_4
+~stench_1_4 => ~wumpus_1_3
+~stench_1_4 => ~wumpus_2_4
+~stench_2_1 => ~wumpus_1_1
+~stench_2_1 => ~wumpus_2_2
+~stench_2_1 => ~wumpus_3_1
+~stench_2_2 => ~wumpus_2_1
+~stench_2_2 => ~wumpus_1_2
+~stench_2_2 => ~wumpus_2_3
+~stench_2_2 => ~wumpus_3_2
+~stench_2_3 => ~wumpus_1_3
+~stench_2_3 => ~wumpus_2_2
+~stench_2_3 => ~wumpus_2_4
+~stench_2_3 => ~wumpus_3_3
+~stench_2_4 => ~wumpus_1_4
+~stench_2_4 => ~wumpus_2_3
+~stench_2_4 => ~wumpus_3_4
+~stench_3_1 => ~wumpus_2_1
+~stench_3_1 => ~wumpus_3_2
+~stench_3_1 => ~wumpus_4_1
+~stench_3_2 => ~wumpus_3_1
+~stench_3_2 => ~wumpus_2_2
+~stench_3_2 => ~wumpus_3_3
+~stench_3_2 => ~wumpus_4_2
+~stench_3_3 => ~wumpus_2_3
+~stench_3_3 => ~wumpus_3_2
+~stench_3_3 => ~wumpus_3_4
+~stench_3_3 => ~wumpus_4_3
+~stench_3_4 => ~wumpus_4_4
+~stench_3_4 => ~wumpus_2_4
+~stench_3_4 => ~wumpus_3_3
+~stench_4_1 => ~wumpus_4_2
+~stench_4_1 => ~wumpus_3_1
+~stench_4_2 => ~wumpus_4_1
+~stench_4_2 => ~wumpus_3_2
+~stench_4_2 => ~wumpus_4_3
+~stench_4_3 => ~wumpus_3_3
+
+~stench_4_3 => ~wumpus_4_2
+
+~stench_4_3 => ~wumpus_4_4
+
+
+~stench_4_4 => ~wumpus_3_4
+
+~stench_4_4 => ~wumpus_4_3
+
+
+% unsafe.....
+
+pit_1_2 | wumpus_1_2 => ~safe_1_2
+
+pit_1_3 | wumpus_1_3 => ~safe_1_3
+
+pit_1_4 | wumpus_1_4 => ~safe_1_4
+
+
+pit_2_1 | wumpus_2_1 => ~safe_2_1
+
+pit_2_2 | wumpus_2_2 => ~safe_2_2
+
+pit_2_3 | wumpus_2_3 => ~safe_2_3
+
+pit_2_4 | wumpus_2_4 => ~safe_2_4
+
+
+pit_3_1 | wumpus_3_1 => ~safe_3_1
+
+pit_3_2 | wumpus_3_2 => ~safe_3_2
+
+pit_3_3 | wumpus_3_3 => ~safe_3_3
+
+pit_3_4 | wumpus_3_4 => ~safe_3_4
+
+
+pit_4_1 | wumpus_4_1 => ~safe_4_1
+
+pit_4_2 | wumpus_4_2 => ~safe_4_2
+
+pit_4_3 | wumpus_4_3 => ~safe_4_3
+
+pit_4_4 | wumpus_4_4 => ~safe_4_4
+
+
+% safe.....
+
+safe_1_1 => ~pit_1_1
+
+safe_1_1 => ~wumpus_1_1
+
+~pit_1_2 & ~wumpus_1_2 => safe_1_2
+
+safe_1_2 => ~pit_1_2
+
+safe_1_2 => ~wumpus_1_2
+
+~pit_1_3 & ~wumpus_1_3 => safe_1_3
+
+safe_1_3 => ~pit_1_3
+
+safe_1_3 => ~wumpus_1_3
+
+~pit_1_4 & ~wumpus_1_4 => safe_1_4
+
+safe_1_4 => ~pit_1_4
+
+safe_1_4 => ~wumpus_1_4
+
+
+~pit_2_1 & ~wumpus_2_1 => safe_2_1
+
+safe_2_1 => ~pit_2_1
+
+safe_2_1 => ~wumpus_2_1
+
+~pit_2_2 & ~wumpus_2_2 => safe_2_2
+
+safe_2_2 => ~pit_2_2
+
+safe_2_2 => ~wumpus_2_2
+
+~pit_2_3 & ~wumpus_2_3 => safe_2_3
+
+safe_2_3 => ~pit_2_3
+
+safe_2_3 => ~wumpus_2_3
+
+~pit_2_4 & ~wumpus_2_4 => safe_2_4
+
+safe_2_4 => ~pit_2_4
+
+safe_2_4 => ~wumpus_2_4
+
+
+~pit_3_1 & ~wumpus_3_1 => safe_3_1
+
+safe_3_1 => ~pit_3_1
+
+safe_3_1 => ~wumpus_3_1
+
+~pit_3_2 & ~wumpus_3_2 => safe_3_2
+
+safe_3_2 => ~pit_3_2
+
+safe_3_2 => ~wumpus_3_2
+
+~pit_3_3 & ~wumpus_3_3 => safe_3_3
+
+safe_3_3 => ~pit_3_3
+
+safe_3_3 => ~wumpus_3_3
+
+~pit_3_4 & ~wumpus_3_4 => safe_3_4
+
+safe_3_4 => ~pit_3_4
+
+safe_3_4 => ~wumpus_3_4
+
+
+~pit_4_1 & ~wumpus_4_1 => safe_4_1
+
+safe_4_1 => ~pit_4_1
+
+safe_4_1 => ~wumpus_4_1
+
+~pit_4_2 & ~wumpus_4_2 => safe_4_2
+
+safe_4_2 => ~pit_4_2
+
+safe_4_2 => ~wumpus_4_2
+
+~pit_4_3 & ~wumpus_4_3 => safe_4_3
+
+safe_4_3 => ~pit_4_3
+
+safe_4_3 => ~wumpus_4_3
+
+~pit_4_4 & ~wumpus_4_4 => safe_4_4
+
+safe_4_4 => ~pit_4_4
+
+safe_4_4 => ~wumpus_4_4
+
+
+
+% Pits .....
+
+breeze_1_3 & breeze_2_2 & breeze_1_1 => pit_1_2
+
+breeze_1_4 & breeze_2_3 & breeze_1_2 => pit_1_3
+
+breeze_1_3 & breeze_2_4 & ~pit_2_3 => pit_1_4
+
+
+breeze_1_1 & breeze_2_2 & breeze_3_1 => pit_2_1
+
+breeze_1_2 & breeze_2_1 & breeze_3_2 & breeze_2_3 => pit_2_2
+
+breeze_1_3 & breeze_2_2 & breeze_3_3 & breeze_2_4 => pit_2_3
+
+breeze_1_4 & breeze_2_3 & breeze_3_4 => pit_2_4
+
+
+breeze_2_1 & breeze_3_2 & breeze_4_1 => pit_3_1
+
+breeze_2_2 & breeze_3_1 & breeze_4_2 & breeze_3_3 => pit_3_2
+
+breeze_2_3 & breeze_3_2 & breeze_4_3 & breeze_3_4 => pit_3_3
+
+breeze_2_4 & breeze_3_3 & breeze_4_4 => pit_3_4
+
+
+breeze_3_1 & breeze_4_2 & ~pit_3_2 => pit_4_1
+
+breeze_4_1 & breeze_3_2 & breeze_4_3 => pit_4_2
+
+breeze_4_2 & breeze_3_3 & breeze_4_4 => pit_4_3
+
+breeze_3_4 & breeze_4_3 & ~pit_3_3 => pit_4_4
+
+% Wumpus.....
+
+stench_1_3 & stench_1_1 => wumpus_1_2
+
+stench_1_4 & stench_1_2 => wumpus_1_3
+
+stench_1_3 & stench_2_4 & ~wumpus_2_3 => wumpus_1_4
+
+
+stench_1_1 & stench_3_1 => wumpus_2_1
+
+stench_1_2 & stench_3_2 => wumpus_2_2
+
+stench_1_3 & stench_3_3 => wumpus_2_3
+
+stench_1_4 & stench_3_4 => wumpus_2_4
+
+stench_2_1 & stench_2_3 => wumpus_2_2
+
+stench_2_2 & stench_2_4 => wumpus_2_3
+
+
+stench_2_1 & stench_4_1 => wumpus_3_1
+
+stench_2_2 & stench_4_2 => wumpus_3_2
+
+stench_2_3 & stench_4_3 => wumpus_3_3
+
+stench_2_4 & stench_4_4 => wumpus_3_4
+
+stench_3_1 & stench_3_3 => wumpus_3_2
+
+stench_3_2 & stench_3_4 => wumpus_3_3
+
+
+stench_3_1 & stench_4_2 & ~wumpus_3_2 => wumpus_4_1
+
+stench_4_1 & stench_4_3 => wumpus_4_2
+
+stench_4_2 & stench_4_4 => wumpus_4_3
+
+stench_3_4 & stench_4_3 & ~wumpus_3_3 => wumpus_4_4
+
+
+
+ 
+
+
+
+
+

@@ -36,6 +36,9 @@ void Agent::Initialize ()
 	currentState.wumpusAlive = true;
 	// Clear out any leftover actions
 	actionList.clear();
+	while(!stack_location.empty())
+		stack_location.pop();
+	stack_location.push(Location(1,1));
 	lastAction = CLIMB; // dummy
 
 	// HW2
@@ -48,7 +51,80 @@ Action Agent::Process (Percept& percept)
 
 	UpdateState(percept);
 
-	if (actionList.empty())
+	if(actionList.empty())
+	{
+		if (percept.Glitter) 
+		{
+			actionList.push_back(GRAB);
+		} 
+		else if (currentState.agentHasGold && (currentState.agentLocation == Location(1,1))) 
+		{
+			actionList.push_back(CLIMB);
+		} 
+		else if (currentState.agentHasGold) 
+		{		
+			Location location;
+			location.X = 1;
+			location.Y = 1;
+			FindPathToLocation(location);
+		}
+		else if (percept.Stench && currentState.agentHasArrow) 
+		{
+			actionList.push_back(SHOOT);
+		}
+		else 
+		{
+			label1:
+			Location l = stack_location.top();
+			stack_location.pop();
+			string str = "safe_" + my_to_string(l.X) + "_" + my_to_string(l.Y);
+			Sentence s(str);
+			bool result = KB.Ask(s);
+			if(result)
+			{
+				switch (currentState.agentOrientation)
+				{
+					case RIGHT: 
+					{
+						stack_location.push(Location(l.X,l.Y-1));
+						stack_location.push(Location(l.X,l.Y+1));
+						stack_location.push(Location(l.X+1,l.Y));
+						break;
+					}
+					case UP:
+					{
+						stack_location.push(Location(l.X-1,l.Y));
+						stack_location.push(Location(l.X+1,l.Y));
+						stack_location.push(Location(l.X,l.Y+1));
+						break;
+					}
+					case LEFT: 
+					{
+						stack_location.push(Location(l.X,l.Y-1));
+						stack_location.push(Location(l.X,l.Y+1));
+						stack_location.push(Location(l.X-1,l.Y));
+						break;
+					}
+					case DOWN:
+					{
+						stack_location.push(Location(l.X-1,l.Y));
+						stack_location.push(Location(l.X+1,l.Y));
+						stack_location.push(Location(l.X,l.Y-1));
+						break;
+					}
+				}
+				if(l == Location(1,1))
+					goto label1;
+				FindPathToLocation(l);
+			}
+		}
+	}
+	action = actionList.front();
+	actionList.pop_front();
+	lastAction = action;
+	return action;
+
+	/*if (actionList.empty())
 	{
 		if (percept.Glitter) {
 			actionList.push_back(GRAB);
@@ -77,7 +153,8 @@ Action Agent::Process (Percept& percept)
 	action = actionList.front();
 	actionList.pop_front();
 	lastAction = action;
-	return action;
+	return action;*/
+
 }
 
 void Agent::GameOver (int score)
@@ -155,11 +232,38 @@ void Agent::UpdateState (Percept& percept)
 		if (y < currentState.worldSize) searchEngine.AddSafeLocation(x,y+1); // worldSize=0 if unknown
 	}
 
+
+	if(percept.Stench)
+	{
+	   string str = "stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   Sentence s(str);
+	   KB.Tell(s);
+	}
+	else
+	{
+	   string str =  "~stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   Sentence s(str);
+	   KB.Tell(s);
+	}
+
+	if(percept.Breeze)
+	{
+	   string str = "breeze_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   Sentence s(str);
+	   KB.Tell(s);
+	}
+	else
+	{
+	   string str = "~breeze_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   Sentence s(str);
+	   KB.Tell(s);
+	}
+
 	// ----- HW3
 	// Potentially add new wumpus/stench rules to KB... (todo)
 	// Potentially add new pit/breeze rules to KB... (todo)
 	// Add stench and breeze info to KB and try to find wumpus/pits
-	if (currentState.wumpusLocation == Location(0,0))
+	/*if (currentState.wumpusLocation == Location(0,0))
 	{
 		// Add stench information to KB
 		string str1 = "stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
@@ -199,7 +303,7 @@ void Agent::UpdateState (Percept& percept)
 	if (KB.Ask(s3))
 	{
 		currentState.pitLocations.push_back(Location(2,1)); // do something with this information
-	}
+	}*/
 
 	// KB.Print(); // Uncomment to check KB at each turn
 
@@ -231,7 +335,7 @@ void Agent::FindPathToLocation (Location& goalLocation)
 void Agent::InitializeKB ()
 {
 	// Start with some rules and facts near the (1,1) location
-	Sentence s1("(stench_1_3 & stench_2_2 & stench_1_1) => wumpus_1_2");
+	/*Sentence s1("(stench_1_3 & stench_2_2 & stench_1_1) => wumpus_1_2");
 	Sentence s2("(stench_3_1 & stench_2_2 & stench_1_1) => wumpus_2_1");
 	Sentence s3("(breeze_1_3 & breeze_2_2 & breeze_1_1) => pit_1_2");
 	Sentence s4("(breeze_3_1 & breeze_2_2 & breeze_1_1) => pit_2_1");
@@ -244,7 +348,9 @@ void Agent::InitializeKB ()
 	KB.Tell(s4);
 	KB.Tell(s5);
 	KB.Tell(s6);
-	KB.Tell(s7);
+	KB.Tell(s7);*/
+	string fileName("kb1.txt");
+	KB.Read(fileName);
 	KB.Print();
 }
 
