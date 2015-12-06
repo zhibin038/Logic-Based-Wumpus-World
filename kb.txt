@@ -104,6 +104,7 @@ safe_1_1
 ~stench_4_4 => ~wumpus_4_3
 
 
+
 % unsafe.....
 
 pit_1_2 | wumpus_1_2 => ~safe_1_2
