@@ -297,6 +297,11 @@ void WumpusWorld::ExecuteAction (Action action)
 		{
 			currentState.agentHasGold = true;
 			currentPercept.Glitter = false;
+			//added for simplicity
+			currentState.agentInCave = false;
+			currentPercept.Stench = false;
+			currentPercept.Breeze = false;
+			currentPercept.Glitter = false;
 		}
 	}
 	if (action == SHOOT)
