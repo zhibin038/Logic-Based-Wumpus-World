@@ -38,11 +38,13 @@ void Agent::Initialize ()
 	actionList.clear();
 	while(!stack_location.empty())
 		stack_location.pop();
-	stack_location.push(Location(1,1));
+	stack_location.push(Location(1,2));
+	stack_location.push(Location(2,1));
 	lastAction = CLIMB; // dummy
 
 	// HW2
 	searchEngine.RemoveSafeLocation(currentState.wumpusLocation.X, currentState.wumpusLocation.Y);
+    searchEngine.AddSafeLocation(1,1);
 }
 
 Action Agent::Process (Percept& percept)
@@ -73,49 +75,52 @@ Action Agent::Process (Percept& percept)
 			actionList.push_back(SHOOT);
 		}
 		else 
-		{
-			label1:
-			Location l = stack_location.top();
-			stack_location.pop();
-			string str = "safe_" + my_to_string(l.X) + "_" + my_to_string(l.Y);
-			Sentence s(str);
-			bool result = KB.Ask(s);
-			if(result)
+		{			
+			while(!stack_location.empty())
 			{
-				switch (currentState.agentOrientation)
+				Location l = stack_location.top();
+				stack_location.pop();
+				string str = "safe_" + my_to_string(l.X) + "_" + my_to_string(l.Y);
+				Sentence s(str);
+				bool result = KB.Ask(s);
+				if(result)
 				{
-					case RIGHT: 
-					{
-						stack_location.push(Location(l.X,l.Y-1));
-						stack_location.push(Location(l.X,l.Y+1));
-						stack_location.push(Location(l.X+1,l.Y));
-						break;
+					KB.Tell(s);
+					searchEngine.AddSafeLocation(l.X,l.Y);
+					FindPathToLocation(l);
+					switch (currentState.agentOrientation)
+					{//TODO:加了原来的location！
+						case RIGHT: 
+						{
+							stack_location.push(Location(l.X,l.Y-1));
+							stack_location.push(Location(l.X,l.Y+1));
+							stack_location.push(Location(l.X+1,l.Y));
+							break;
+						}
+						case UP:
+						{
+							stack_location.push(Location(l.X-1,l.Y));
+							stack_location.push(Location(l.X+1,l.Y));
+							stack_location.push(Location(l.X,l.Y+1));
+							break;
+						}
+						case LEFT: 
+						{
+							stack_location.push(Location(l.X,l.Y-1));
+							stack_location.push(Location(l.X,l.Y+1));
+							stack_location.push(Location(l.X-1,l.Y));
+							break;
+						}
+						case DOWN:
+						{
+							stack_location.push(Location(l.X-1,l.Y));
+							stack_location.push(Location(l.X+1,l.Y));
+							stack_location.push(Location(l.X,l.Y-1));
+							break;
+						}
 					}
-					case UP:
-					{
-						stack_location.push(Location(l.X-1,l.Y));
-						stack_location.push(Location(l.X+1,l.Y));
-						stack_location.push(Location(l.X,l.Y+1));
-						break;
-					}
-					case LEFT: 
-					{
-						stack_location.push(Location(l.X,l.Y-1));
-						stack_location.push(Location(l.X,l.Y+1));
-						stack_location.push(Location(l.X-1,l.Y));
-						break;
-					}
-					case DOWN:
-					{
-						stack_location.push(Location(l.X-1,l.Y));
-						stack_location.push(Location(l.X+1,l.Y));
-						stack_location.push(Location(l.X,l.Y-1));
-						break;
-					}
+					break;									
 				}
-				if(l == Location(1,1))
-					goto label1;
-				FindPathToLocation(l);
 			}
 		}
 	}
@@ -221,7 +226,7 @@ void Agent::UpdateState (Percept& percept)
 	}
 
 	// HW2: Update safe locations in search engine
-	int x = currentState.agentLocation.X;
+	/*int x = currentState.agentLocation.X;
 	int y = currentState.agentLocation.Y;
 	searchEngine.AddSafeLocation(x,y);
 	if ((! percept.Breeze) && ((! percept.Stench) || (! currentState.wumpusAlive)))
@@ -230,33 +235,116 @@ void Agent::UpdateState (Percept& percept)
 		if (x < currentState.worldSize) searchEngine.AddSafeLocation(x+1,y); // worldSize=0 if unknown
 		if (y > 1) searchEngine.AddSafeLocation(x,y-1);
 		if (y < currentState.worldSize) searchEngine.AddSafeLocation(x,y+1); // worldSize=0 if unknown
-	}
+	}*/
 
-
+	string str;
+	Sentence s;
 	if(percept.Stench)
 	{
-	   string str = "stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
-	   Sentence s(str);
+	   str = "stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   s = str;
+	   KB.Tell(s);
+	   str = "";
+	   int X = currentState.agentLocation.X;
+	   int Y = currentState.agentLocation.Y;
+	   if(X - 1 > 0)
+		   str += "wumpus_"+ my_to_string(X-1)+"_"+ my_to_string(Y) + "|";
+	   if(X + 1 < 5)
+		   str += "wumpus_"+ my_to_string(X+1)+"_"+ my_to_string(Y) + "|";
+	   if(Y - 1 > 0)
+		   str += "wumpus_"+ my_to_string(X)+"_"+ my_to_string(Y-1) + "|";
+	   if(Y + 1 < 5)
+		   str += "wumpus_"+ my_to_string(X)+"_"+ my_to_string(Y+1) + "|";
+	   str = str.substr(0,str.size()-1);
+	   cout << str << endl;
+	   s = str;
 	   KB.Tell(s);
 	}
 	else
 	{
-	   string str =  "~stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
-	   Sentence s(str);
+	   str =  "~stench_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   s = str;
 	   KB.Tell(s);
+	   int X = currentState.agentLocation.X;
+	   int Y = currentState.agentLocation.Y;
+	   if(X - 1 > 0)
+	   {   
+		   str = "~wumpus_"+ my_to_string(X-1)+"_"+ my_to_string(Y);
+		   s = str;
+		   KB.Tell(s);
+	   }
+	   if(X + 1 < 5)
+	   {   
+		   str = "~wumpus_"+ my_to_string(X+1)+"_"+ my_to_string(Y);
+		   s = str;
+		   KB.Tell(s);
+	   }
+	   if(Y - 1 > 0)
+	   {   
+		   str = "~wumpus_"+ my_to_string(X)+"_"+ my_to_string(Y-1);
+		   s = str;
+		   KB.Tell(s);
+	   }
+	   if(Y + 1 < 5)
+	   {   
+		   str = "~wumpus_"+ my_to_string(X)+"_"+ my_to_string(Y+1);
+		   s = str;
+		   KB.Tell(s);
+	   }
 	}
 
 	if(percept.Breeze)
 	{
-	   string str = "breeze_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
-	   Sentence s(str);
+	   str = "breeze_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   s = str;
+	   KB.Tell(s);
+	   str = "";
+	   int X = currentState.agentLocation.X;
+	   int Y = currentState.agentLocation.Y;
+	   if(X - 1 > 0)
+		   str += "pit_"+ my_to_string(X-1)+"_"+ my_to_string(Y) + "|";
+	   if(X + 1 < 5)
+		   str += "pit_"+ my_to_string(X+1)+"_"+ my_to_string(Y) + "|";
+	   if(Y - 1 > 0)
+		   str += "pit_"+ my_to_string(X)+"_"+ my_to_string(Y-1) + "|";
+	   if(Y + 1 < 5)
+		   str += "pit_"+ my_to_string(X)+"_"+ my_to_string(Y+1) + "|";
+	   str = str.substr(0,str.size()-1);
+	   cout << str << endl;
+	   s = str;
 	   KB.Tell(s);
 	}
 	else
 	{
-	   string str = "~breeze_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
-	   Sentence s(str);
+	   str = "~breeze_" + my_to_string(currentState.agentLocation.X) + "_" + my_to_string(currentState.agentLocation.Y);
+	   s = str;
 	   KB.Tell(s);
+	   int X = currentState.agentLocation.X;
+	   int Y = currentState.agentLocation.Y;
+	   if(X - 1 > 0)
+	   {   
+		   str = "~pit_"+ my_to_string(X-1)+"_"+ my_to_string(Y);
+		   s = str;
+		   KB.Tell(s);
+	   }
+	   if(X + 1 < 5)
+	   {   
+		   str = "~pit_"+ my_to_string(X+1)+"_"+ my_to_string(Y);
+		   s = str;
+		   KB.Tell(s);
+	   }
+	   if(Y - 1 > 0)
+	   {   
+		   str = "~pit_"+ my_to_string(X)+"_"+ my_to_string(Y-1);
+		   s = str;
+		   KB.Tell(s);
+	   }
+	   if(Y + 1 < 5)
+	   {   
+		   str = "~pit_"+ my_to_string(X)+"_"+ my_to_string(Y+1);
+		   s = str;
+		   KB.Tell(s);
+	   }
 	}
 
 	// ----- HW3
@@ -305,7 +393,7 @@ void Agent::UpdateState (Percept& percept)
 		currentState.pitLocations.push_back(Location(2,1)); // do something with this information
 	}*/
 
-	// KB.Print(); // Uncomment to check KB at each turn
+	//KB.Print(); // Uncomment to check KB at each turn
 
 	// ----- End HW3 additions
 }
@@ -317,12 +405,15 @@ void Agent::FindPathToLocation (Location& goalLocation)
 	SearchState* initialState = new SearchState (currentState.agentLocation, currentState.agentOrientation, 0, NULL, CLIMB);
 	SearchState* goalState = new SearchState (goalLocation, currentState.agentOrientation, 0, NULL, CLIMB);
 	SearchState* finalState = searchEngine.Search (initialState, goalState);
+	cout << "initialState is :" << initialState->location.X << "-" << initialState->location.Y << "-" << initialState->orientation << endl;
+	cout << "to goalState is :" << goalState->location.X << "-" << goalState->location.Y << "-" << goalState->orientation << endl;
 	// If solution found, retain actions
 	if (finalState != NULL)
 	{
 		SearchState* tmpState = finalState;
 		while (tmpState->parent != NULL)
 		{
+			PrintAction(tmpState->action);
 			actionList.push_front(tmpState->action);
 			tmpState = tmpState->parent;
 		}
@@ -349,7 +440,7 @@ void Agent::InitializeKB ()
 	KB.Tell(s5);
 	KB.Tell(s6);
 	KB.Tell(s7);*/
-	string fileName("kb1.txt");
+	string fileName("kb2.txt");
 	KB.Read(fileName);
 	KB.Print();
 }

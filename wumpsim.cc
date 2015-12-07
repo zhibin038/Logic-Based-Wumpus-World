@@ -20,9 +20,9 @@ int main (int argc, char *argv[])
 	int numTrials = 1;
 	int numTries = 1;
 	unsigned seed;
-	char* worldFile;
+	char* worldFile = "testworld.txt";
 	bool seedSet = false;
-	bool worldSet = false;
+	bool worldSet = true;
 
 	// Process command-line options
 	int i = 1;

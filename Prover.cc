@@ -534,7 +534,7 @@ void KnowledgeBase::Read (string& fileName)
 		{
 			if (line[0] != '%') {
 				sentence = (Sentence) line;
-				cout << "--" << line << endl;
+				cout  << line << endl;
 				Tell(sentence);
 			}
 		}
