@@ -93,6 +93,7 @@ int main (int argc, char *argv[])
 		}
 		//wumpusWorld->Write (".world");
 		agent = new Agent ();
+		agent->numMoves =0;
 		trialScore = 0;
 		for (int tries = 1; tries <= numTries; tries++)
 		{
@@ -102,25 +103,24 @@ int main (int argc, char *argv[])
 			cout << "Trial " << trial << ", Try " << tries << " begin" << endl << endl;
 			while ((! wumpusWorld->GameOver()) && (numMoves < MAX_MOVES_PER_GAME))
 			{
-				wumpusWorld->Print();
+				//wumpusWorld->Print();
 				percept = wumpusWorld->GetPercept();
+				agent->numMoves ++;
 				action = agent->Process (percept);
-				cout << "Action = ";
-				PrintAction (action);
-				cout << endl << endl;
+				//cout << "Action = ";
+				//PrintAction (action);
+				//cout << endl << endl;
 				wumpusWorld->ExecuteAction (action);
 				numMoves++;
 			}
 			score = wumpusWorld->GetScore();
-			if(numTries%100)
-                agent->GameOver (score, percept );
-            else
-                agent->UpdateQ_table();
+            agent->GameOver();
+
 			if(numTries > 300)
                 trialScore = trialScore + score;
 			cout << "Trial " << trial << ", Try " << tries << " complete: Score = " << score << endl << endl;
 		}
-		agent->GameOver (score, percept );
+        agent->Print_Table();
 		delete agent;
 		delete wumpusWorld;
 		averageScore = ((float) trialScore) / ((float) numTries-300);
