@@ -26,10 +26,11 @@ map<std::string,int> create_table()
 Agent::Agent ()
 {
 	// HW2
-	currentState.worldSize = 0; // unknown
+	currentState.worldSize = 4; // unknown
 	currentState.wumpusLocation = Location(0,0); // unknown
 	currentState.goldLocation = Location(0,0); // unknown
 	// HW3
+
 	InitializeKB();
 }
 
@@ -50,7 +51,9 @@ void Agent::Initialize ()
 	currentState.wumpusAlive = true;
 	// Clear out any leftover actions
 	actionList.clear();
+	whole_last_action =-1;
 	lastAction = CLIMB; // dummy
+	previous_state = currentState;
 
 	// HW2
 	searchEngine.RemoveSafeLocation(currentState.wumpusLocation.X, currentState.wumpusLocation.Y);
@@ -58,7 +61,7 @@ void Agent::Initialize ()
 
 float Agent::Reward( WorldState previous_state,Action lastAction)
 {
-	if(  currentState.agentHasGold && lastAction == GRAB  && !previous_state.agentHasGold)
+	if(  !currentState.agentHasGold && lastAction == GRAB )
 		return 500.0;
     if(currentState.agentHasGold && currentState.agentLocation == Location(1,1) && lastAction==CLIMB)
         return 1000.0;
@@ -67,26 +70,27 @@ float Agent::Reward( WorldState previous_state,Action lastAction)
 	if( !currentState.wumpusAlive)
 		return -1000.0;
 	else
-		return -1.0;
+		return 0;
 }
 
  map<std::string,float> Agent::Q_table =  create_map();
 map<std::string,int> Agent::frequency_table = create_table();
 
-int Agent::UpdateQ_table(Location s,WorldState previous_state )
+int Agent::UpdateQ_table( )
 {
     float Q_sa =0;
     ostringstream convert1,convert2,convert3,convert4;
-    convert1 << s.X;
-    convert2 << s.Y;
-    convert3 << lastAction;
-    convert4 << previous_state.agentOrientation;
+    convert1 << previous_state.agentLocation.X;
+    convert2 << previous_state.agentLocation.Y;
+    convert3 << whole_last_action;
+    if(whole_last_action == -1)
+    return 0;
     string golad_state;
     if( previous_state.agentHasGold )
             golad_state = "_gold_";
     else
             golad_state = "_~gold_";
-    string pre_state_action_pair ( convert1.str() + "_" + convert2.str() + golad_state + convert4.str() + "_" + convert3.str());
+    string pre_state_action_pair ( convert1.str() + "_" + convert2.str() + golad_state  + convert3.str());
     std::map<std::string,float>::iterator it= Agent::Q_table.find(pre_state_action_pair);
         if(it != Q_table.end())
             Q_sa =Q_table[pre_state_action_pair];
@@ -100,30 +104,41 @@ int Agent::UpdateQ_table(Location s,WorldState previous_state )
 Action Agent::Process (Percept& percept)
 {
 	Action action;
-    Location pre_loaction = currentState.agentLocation;
+
     if(percept.Glitter)
         cout << "here~~~~~~~~~~~~~~~~~~~~"<<endl;
-    WorldState previous_state =currentState ;
+
     UpdateState(percept);
 
 	if (actionList.empty())
 	{
 		//update Q-talbe but do not generate actions assume best actions
-        UpdateQ_table(pre_loaction,previous_state);
-
+        UpdateQ_table();
+        int action_code;
             //choosing the max value action or random
-            int Max = MaxAction ( currentState.agentLocation,  action,previous_state );
-            if( Max != 0)
-                action = random();
-            if( frequency_counts( previous_state ) < 20)
-                 action = random();
-            actionList.push_back(action);
+            int Max = MaxAction( currentState.agentLocation,previous_state );
+            if( Max != -1)
+                action_code = random();
+            if( frequency_counts( previous_state ) < 10)
+                 action_code = random();
+
+            int valid_action=1;
+            while( valid_action )
+            {
+                valid_action = Generate_Action(action_code);
+                if(valid_action)
+                    action_code = random();
+            }
 
 		if (percept.Glitter && !currentState.agentHasGold )
 		 {
             actionList.pop_front();
+            actionList.clear();
 			actionList.push_back(GRAB);
+			action_code = 5;
             }
+        whole_last_action = action_code;
+        previous_state = currentState;
     }
 	action = actionList.front();
 	int k = actionList.size();
@@ -138,13 +153,13 @@ int  Agent::frequency_counts( WorldState state)
     ostringstream convert1,convert2,convert3;
     convert1 << state.agentLocation.X;
     convert2 << state.agentLocation.Y;
-    convert3 << state.agentOrientation;
+
     string  golad_state;
     if( currentState.agentHasGold )
             golad_state = "_gold_";
     else
             golad_state = "_~gold_";
-    string state_s ( convert1.str() + "_" + convert2.str()  + golad_state + convert3.str() +"_"  );
+    string state_s ( convert1.str() + "_" + convert2.str()  + golad_state  );
     std::map<std::string,int>::iterator it= frequency_table.find(state_s);
      if(it != frequency_table.end())
         {   frequency_table[state_s] = frequency_table[state_s] + 1;}
@@ -157,10 +172,9 @@ int  Agent::frequency_counts( WorldState state)
 Action Agent::random()
 {   Action action;
     int k = rand();
-    cout << "each rand = "<< k <<flush;
-     action = (Action) (k % 6);
-    if(action == GRAB)
-                action = random();
+   //s cout << "each rand = "<< k <<flush;
+     action = (Action) (k % 4);
+
     return action;
 }
 
@@ -175,8 +189,8 @@ float Agent::MaxQvalue ( )
     else
             golad_state = "_~gold_";
 
-    convert3 << currentState.agentOrientation;
-    string state_s  ( convert1.str() + "_" + convert2.str() + golad_state + convert3.str() + "_");
+
+    string state_s  ( convert1.str() + "_" + convert2.str() + golad_state  );
 
     float Max=-9999;
     for(int i=0; i < 5 ; i++)
@@ -198,7 +212,44 @@ float Agent::MaxQvalue ( )
     return Max;
 }
 
-int Agent::MaxAction (Location state , Action &act, WorldState previous_state)
+int Agent::Generate_Action(int action_code)
+{
+    cout << "action code:" << action_code <<endl;
+     Location new_location;
+    if(action_code == 0)  //go to right
+    {
+         new_location.X = currentState.agentLocation.X+1;
+         new_location.Y =currentState.agentLocation.Y;
+         if(new_location.X > currentState.worldSize)
+            return 1;
+    }
+     if(action_code == 1) //go to up
+    {
+         new_location.X = currentState.agentLocation.X;
+         new_location.Y =currentState.agentLocation.Y+1;
+          if(new_location.Y > currentState.worldSize)
+            return 1;
+    }
+     if(action_code == 2)  //go to left
+    {
+
+         new_location.X = currentState.agentLocation.X-1;
+         new_location.Y =currentState.agentLocation.Y;
+         if(new_location.X <=0)
+            return 1;
+    }
+     if(action_code == 3 )   //go to down
+    {
+         new_location.X = currentState.agentLocation.X;
+         new_location.Y =currentState.agentLocation.Y-1;
+          if(new_location.Y <= 0)
+            return 1;
+    }
+    FindPathToLocation(new_location);
+    return 0;
+}
+
+int Agent::MaxAction (Location state , WorldState previous_state)
 {
     ostringstream convert1,convert2,convert3;
     convert1 << state.X;
@@ -208,12 +259,12 @@ int Agent::MaxAction (Location state , Action &act, WorldState previous_state)
             golad_state = "_gold_";
     else
             golad_state = "_~gold_";
-    convert3 << previous_state.agentOrientation;
-    string state_s ( convert1.str() + "_" + convert2.str() + golad_state + convert3.str() + "_");
+
+    string state_s ( convert1.str() + "_" + convert2.str() + golad_state );
 
     bool found=0;
     float Max = -1000;
-    for(int i=0; i < 5 ; i++)
+    for(int i=0; i < 3 ; i++)
     {
         ostringstream action_str;
         action_str << i;
@@ -226,14 +277,13 @@ int Agent::MaxAction (Location state , Action &act, WorldState previous_state)
                 float temp = Q_table[state_action_pair];
                 if( Max < temp)
                 {       found =true;
-                        act = static_cast<Action>(i);
                         Max = temp;
                 }
                // cout << state_action_pair << " value: " << temp <<endl;
           }
     }
     if(found)
-        return 0;
+        return Max;
     return -1;
 }
 
@@ -262,9 +312,10 @@ void Agent::Print_Table()
 
 }
 
-void Agent::GameOver (int score)
+void Agent::GameOver (int score, Percept percept)
 {
-    UpdateQ_table(currentState.agentLocation, currentState);
+
+    UpdateQ_table();
     Print_Table();
 }
 

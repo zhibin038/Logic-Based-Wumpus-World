@@ -20,27 +20,32 @@ public:
 	~Agent ();
 	void Initialize ();
 	Action Process (Percept& percept);
-	void GameOver (int score);
+	void GameOver (int score,Percept percept);
 
 	// HW1
 	void UpdateState (Percept& percept);
 	WorldState currentState;
-	list<Action> actionList;
-	Action lastAction;
+    WorldState previous_state;
 
+	list<Action> actionList;
+	int Generate_Action(int action_code);
+	Action lastAction;
+    int whole_last_action;
 	// HW2
 	Action random();
-	int MaxAction (Location state , Action &act, WorldState previous_state);
+	int MaxAction (Location state , WorldState previous_state);
 	SearchEngine searchEngine;
 	void FindPathToLocation (Location& goalLocation);
     static map<std::string,float> Q_table;// HW3
     static map<std::string,int> frequency_table;
 	KnowledgeBase KB;
 	void InitializeKB();
+
+
 	float Reward( WorldState previous_state,Action lastAction) ;
 	float MaxQvalue ( );
 	int frequency_counts( WorldState state);
-	int UpdateQ_table(Location s,WorldState previous_state );
+	int UpdateQ_table( );
     void Print_Table();
 };
 

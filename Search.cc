@@ -218,9 +218,9 @@ bool SearchEngine::SafeLocation (int x, int y)
 	Location location;
 	location.X = x;
 	location.Y = y;
-	if (findLocation (safeLocations.begin(), safeLocations.end(), location) != safeLocations.end())
+	//if (findLocation (safeLocations.begin(), safeLocations.end(), location) != safeLocations.end())
 		return true;
-	else return false;
+	 return false;
 }
 
 // Return true if state on explored or frontier lists

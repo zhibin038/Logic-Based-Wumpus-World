@@ -112,13 +112,18 @@ int main (int argc, char *argv[])
 				numMoves++;
 			}
 			score = wumpusWorld->GetScore();
-			agent->GameOver (score);
-			trialScore = trialScore + score;
+			if(numTries%100)
+                agent->GameOver (score, percept );
+            else
+                agent->UpdateQ_table();
+			if(numTries > 300)
+                trialScore = trialScore + score;
 			cout << "Trial " << trial << ", Try " << tries << " complete: Score = " << score << endl << endl;
 		}
+		agent->GameOver (score, percept );
 		delete agent;
 		delete wumpusWorld;
-		averageScore = ((float) trialScore) / ((float) numTries);
+		averageScore = ((float) trialScore) / ((float) numTries-300);
 		cout << "Trial " << trial << " complete: Average score for trial = " << averageScore << endl << endl;
 		totalScore = totalScore + trialScore;
 	}
